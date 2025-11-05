@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annonces du Jour</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <a href="/index.html">Créer une annonce</a>
+        <a href="/all.html">Toutes les annonces</a>
+        <a href="/today.html" class="active">Annonces du jour</a>
+    </nav>
+
+    <main>
+        <h1>Annonces à poster aujourd'hui</h1>
+        <div id="today-list" class="grid-container">
+            <!-- Les cartes récapitulatives seront injectées ici -->
+        </div>
+
+        <!-- Structure de la modale -->
+        <div id="modal-container" class="modal-container">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content"></div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

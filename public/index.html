@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle Annonce Vinted</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <a href="/index.html" class="active">Créer une annonce</a>
+        <a href="/all.html">Toutes les annonces</a>
+        <a href="/today.html">Annonces du jour</a>
+    </nav>
+
+    <main>
+        <h1>Créer un brouillon d'annonce</h1>
+        <form action="/api/annonces" method="POST" enctype="multipart/form-data" class="annonce-form">
+
+            <div class="form-group">
+                <label>Photos</label>
+                <label for="photos" class="file-drop-zone">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a1 1 0 0 1 1 1v10.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L11 13.586V3a1 1 0 0 1 1-1ZM4 19a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-5a1 1 0 1 1 2 0v5a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5v-5a1 1 0 1 1 2 0v5Z"/></svg>
+                    <p>Cliquez pour choisir ou glissez-déposez</p>
+                    <span>PNG, JPG, WEBP (max 10)</span>
+                </label>
+                <input type="file" id="photos" name="photos" multiple accept="image/*" class="is-hidden">
+                <div id="photos-preview" class="photos-preview-container"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="titre">Titre</label>
+                <input type="text" id="titre" name="titre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="8" required></textarea>
+            </div>
+
+            <div class="form-group autocomplete-container">
+                <label for="categorie">Catégorie</label>
+                <input type="text" id="categorie" name="categorie" required autocomplete="off">
+                <div id="categorie-suggestions" class="suggestions-container"></div>
+            </div>
+
+            <div class="form-group autocomplete-container">
+                <label for="marque">Marque</label>
+                <input type="text" id="marque" name="marque" required autocomplete="off">
+                <div id="marque-suggestions" class="suggestions-container"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="taille">Taille</label>
+                <select id="taille" name="taille">
+                    <option value="" disabled selected>-- Choisir une taille --</option>
+                    <optgroup label="Tailles universelles">
+                        <option value="XXS">XXS</option>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                        <option value="3XL">3XL</option>
+                        <option value="4XL">4XL</option>
+                        <option value="Taille unique">Taille unique</option>
+                    </optgroup>
+                    <optgroup label="Tailles en chiffres (vêtements)">
+                        <option value="32">32</option>
+                        <option value="34">34</option>
+                        <option value="36">36</option>
+                        <option value="38">38</option>
+                        <option value="40">40</option>
+                        <option value="42">42</option>
+                        <option value="44">44</option>
+                        <option value="46">46</option>
+                        <option value="48">48</option>
+                        <option value="50">50</option>
+                    </optgroup>
+                    <optgroup label="Pointures (chaussures)">
+                        <option value="35">35</option>
+                        <option value="36">36</option>
+                        <option value="37">37</option>
+                        <option value="38">38</option>
+                        <option value="39">39</option>
+                        <option value="40">40</option>
+                        <option value="41">41</option>
+                        <option value="42">42</option>
+                        <option value="43">43</option>
+                        <option value="44">44</option>
+                        <option value="45">45</option>
+                        <option value="46">46</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="etat">État</label>
+                <select id="etat" name="etat" required>
+                    <option value="Neuf avec étiquette">Neuf avec étiquette</option>
+                    <option value="Neuf sans étiquette">Neuf sans étiquette</option>
+                    <option value="Très bon état">Très bon état</option>
+                    <option value="Bon état">Bon état</option>
+                    <option value="Satisfaisant">Satisfaisant</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Couleurs (2 max)</label>
+                <input type="hidden" name="couleur" id="couleur-input" required>
+                <div class="tag-container" id="couleur-tags" data-limit="2">
+                    <div class="tag-option" data-value="Noir">Noir</div>
+                    <div class="tag-option" data-value="Blanc">Blanc</div>
+                    <div class="tag-option" data-value="Gris">Gris</div>
+                    <div class="tag-option" data-value="Rouge">Rouge</div>
+                    <div class="tag-option" data-value="Bleu">Bleu</div>
+                    <div class="tag-option" data-value="Vert">Vert</div>
+                    <div class="tag-option" data-value="Jaune">Jaune</div>
+                    <div class="tag-option" data-value="Orange">Orange</div>
+                    <div class="tag-option" data-value="Violet">Violet</div>
+                    <div class="tag-option" data-value="Rose">Rose</div>
+                    <div class="tag-option" data-value="Marron">Marron</div>
+                    <div class="tag-option" data-value="Beige">Beige</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Matériaux (3 max)</label>
+                <input type="hidden" name="materiaux" id="materiaux-input">
+                <div class="tag-container" id="materiaux-tags" data-limit="3">
+                    <div class="tag-option" data-value="Coton">Coton</div>
+                    <div class="tag-option" data-value="Laine">Laine</div>
+                    <div class="tag-option" data-value="Soie">Soie</div>
+                    <div class="tag-option" data-value="Lin">Lin</div>
+                    <div class="tag-option" data-value="Polyester">Polyester</div>
+                    <div class="tag-option" data-value="Viscose">Viscose</div>
+                    <div class="tag-option" data-value="Cuir">Cuir</div>
+                    <div class="tag-option" data-value="Jean">Jean</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="prix">Prix</label>
+                <input type="number" id="prix" name="prix" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="formatColis">Format du colis</label>
+                <select id="formatColis" name="formatColis" required>
+                    <option value="Petit">Petit</option>
+                    <option value="Moyen">Moyen</option>
+                    <option value="Grand">Grand</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="datePublication">Date de publication souhaitée</label>
+                <input type="date" id="datePublication" name="datePublication" required>
+            </div>
+
+            <div class="form-group">
+                <label for="repetition">Répéter l'annonce</label>
+                <select id="repetition" name="repetition">
+                    <option value="0" selected>Jamais</option>
+                    <option value="1">Tous les jours</option>
+                    <option value="7">Toutes les semaines</option>
+                    <option value="14">Toutes les 2 semaines</option>
+                    <option value="30">Tous les mois (30 jours)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Enregistrer l'annonce</button>
+
+        </form>
+    </main>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="app.js"></script>
+</body>
+</html>
