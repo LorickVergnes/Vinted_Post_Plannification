@@ -231,6 +231,8 @@ function setupPhotoPreviews() {
     const dropZone = document.querySelector('.file-drop-zone');
     if (!photoInput || !previewContainer || !dropZone) return;
 
+    let draggedIndex = null;
+
     // Helper function to process files
     function handleFiles(files) {
         const fileList = Array.from(files);
@@ -242,41 +244,45 @@ function setupPhotoPreviews() {
         renderPreviews();
     }
 
-    // Click listener
+    // Click listener for file input
     photoInput.addEventListener('change', () => {
         handleFiles(photoInput.files);
         photoInput.value = '';
     });
 
-    // Drag and Drop listeners
+    // Drag and Drop listeners for file input
     dropZone.addEventListener('dragover', (event) => {
         event.preventDefault();
         dropZone.classList.add('is-active');
     });
-
     dropZone.addEventListener('dragleave', () => {
         dropZone.classList.remove('is-active');
     });
-
     dropZone.addEventListener('drop', (event) => {
         event.preventDefault();
         dropZone.classList.remove('is-active');
         handleFiles(event.dataTransfer.files);
     });
 
+    // Main render function
     window.renderPreviews = function() {
         previewContainer.innerHTML = '';
-        selectedFiles.forEach(fileOrString => {
+        selectedFiles.forEach((fileOrString, index) => {
             const previewWrapper = document.createElement('div');
             previewWrapper.className = 'preview-image-container';
+            previewWrapper.setAttribute('draggable', 'true');
+            previewWrapper.setAttribute('data-index', index);
+
             const img = document.createElement('img');
+            img.addEventListener('click', () => openLightbox(index)); // Click to open lightbox
 
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-image-btn';
             removeBtn.innerHTML = '<i data-feather="x"></i>';
             removeBtn.type = 'button';
-            removeBtn.addEventListener('click', () => {
-                selectedFiles = selectedFiles.filter(f => (f.name || f) !== (fileOrString.name || fileOrString));
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent opening lightbox
+                selectedFiles.splice(index, 1);
                 renderPreviews();
             });
 
@@ -284,6 +290,38 @@ function setupPhotoPreviews() {
             previewWrapper.appendChild(removeBtn);
             previewContainer.appendChild(previewWrapper);
 
+            // Drag and Drop listeners for reordering
+            previewWrapper.addEventListener('dragstart', (e) => {
+                draggedIndex = index;
+                setTimeout(() => e.target.classList.add('is-dragging'), 0);
+            });
+            previewWrapper.addEventListener('dragend', (e) => {
+                e.target.classList.remove('is-dragging');
+            });
+            previewWrapper.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.preview-image-container');
+                if (target && draggedIndex !== Number(target.dataset.index)) {
+                    target.classList.add('is-drag-over');
+                }
+            });
+            previewWrapper.addEventListener('dragleave', (e) => {
+                e.target.closest('.preview-image-container').classList.remove('is-drag-over');
+            });
+            previewWrapper.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('.preview-image-container');
+                target.classList.remove('is-drag-over');
+                const droppedOnIndex = Number(target.dataset.index);
+
+                if (draggedIndex === droppedOnIndex) return;
+
+                const [draggedItem] = selectedFiles.splice(draggedIndex, 1);
+                selectedFiles.splice(droppedOnIndex, 0, draggedItem);
+                renderPreviews();
+            });
+
+            // Load image source
             if (typeof fileOrString === 'string') {
                 img.src = `/uploads/${fileOrString}`;
             } else {
@@ -293,6 +331,78 @@ function setupPhotoPreviews() {
             }
         });
         feather.replace();
+    }
+}
+
+// --- Lightbox Functions ---
+let currentLightboxIndex = 0;
+
+function openLightbox(index) {
+    currentLightboxIndex = index;
+    const lightboxContainer = document.createElement('div');
+    lightboxContainer.id = 'lightbox-container';
+    lightboxContainer.className = 'lightbox-container';
+    
+    document.body.appendChild(lightboxContainer);
+    document.body.classList.add('modal-open'); // Reuse modal-open to prevent background scroll
+
+    showLightboxImage();
+
+    // Add keyboard navigation
+    window.addEventListener('keydown', handleLightboxKeys);
+}
+
+function showLightboxImage() {
+    const lightboxContainer = document.getElementById('lightbox-container');
+    if (!lightboxContainer) return;
+
+    const fileOrString = selectedFiles[currentLightboxIndex];
+    let imgSrc = '';
+    if (typeof fileOrString === 'string') {
+        imgSrc = `/uploads/${fileOrString}`;
+    } else {
+        imgSrc = URL.createObjectURL(fileOrString); // More efficient for local files
+    }
+
+    lightboxContainer.innerHTML = `
+        <div class="lightbox-backdrop" onclick="closeLightbox()"></div>
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-prev" style="display: ${currentLightboxIndex > 0 ? 'flex' : 'none'}">‹</button>
+        <div class="lightbox-content">
+            <img src="${imgSrc}" alt="Aperçu">
+        </div>
+        <button class="lightbox-next" style="display: ${currentLightboxIndex < selectedFiles.length - 1 ? 'flex' : 'none'}">›</button>
+    `;
+
+    // Add event listeners for new buttons
+    lightboxContainer.querySelector('.lightbox-prev').addEventListener('click', () => {
+        currentLightboxIndex--;
+        showLightboxImage();
+    });
+    lightboxContainer.querySelector('.lightbox-next').addEventListener('click', () => {
+        currentLightboxIndex++;
+        showLightboxImage();
+    });
+}
+
+function closeLightbox() {
+    const lightboxContainer = document.getElementById('lightbox-container');
+    if (lightboxContainer) {
+        document.body.removeChild(lightboxContainer);
+    }
+    document.body.classList.remove('modal-open');
+    window.removeEventListener('keydown', handleLightboxKeys);
+}
+
+function handleLightboxKeys(e) {
+    if (e.key === 'Escape') {
+        closeLightbox();
+    } else if (e.key === 'ArrowLeft' && currentLightboxIndex > 0) {
+        currentLightboxIndex--;
+        showLightboxImage();
+    } else if (e.key === 'ArrowRight' && currentLightboxIndex < selectedFiles.length - 1) {
+        currentLightboxIndex++;
+        showLightboxImage();
     }
 }
 
