@@ -14,7 +14,7 @@ let db;
 
 async function connectToMongo() {
     try {
-        const client = new MongoClient(mongoUrl);
+                const client = new MongoClient(mongoUrl, { tls: true });
         await client.connect();
         console.log('Connecté à MongoDB');
         db = client.db(dbName);
@@ -82,10 +82,11 @@ app.post('/api/annonces', upload.array('photos', 10), async (req, res) => {
             materiaux: materiaux,
             prix: body.prix || 0,
             formatColis: body.formatColis || '',
-            datePublication: body.datePublication || '',
+            datePublication: body.datePublication ? new Date(body.datePublication) : null,
             repetition: body.repetition || '0',
             images: imagePaths,
-            createdAt: new Date()
+            createdAt: new Date(),
+            isSold: false
         };
 
         const result = await db.collection('annonces').insertOne(nouvelleAnnonce);
@@ -157,6 +158,20 @@ app.get('/api/annonces/today', async (req, res) => {
 });
 
 /**
+ * GET /api/annonces/sold
+ * Retourne la liste de toutes les annonces vendues.
+ */
+app.get('/api/annonces/sold', async (req, res) => {
+    try {
+        const annonces = await db.collection('annonces').find({ isSold: true }).sort({ createdAt: -1 }).toArray();
+        res.json(annonces);
+    } catch (error) {
+        console.error('Erreur lors de la lecture des annonces vendues:', error);
+        res.status(500).send('Erreur interne du serveur.');
+    }
+});
+
+/**
  * GET /api/annonces/:id
  * Retourne une annonce spécifique par son ID.
  */
@@ -214,7 +229,9 @@ app.post('/api/annonces/:id', upload.array('photos', 10), async (req, res) => {
         const couleurs = body.couleur ? body.couleur.split(',') : [];
         const materiaux = body.materiaux ? body.materiaux.split(',') : [];
 
-        const updatedAnnonce = {
+        const isSold = body.isSold === 'on';
+
+        const fieldsToUpdate = {
             titre: body.titre || '',
             description: body.description || '',
             categorie: body.categorie || '',
@@ -225,12 +242,18 @@ app.post('/api/annonces/:id', upload.array('photos', 10), async (req, res) => {
             materiaux: materiaux,
             prix: body.prix || 0,
             formatColis: body.formatColis || '',
-            datePublication: body.datePublication || '',
             repetition: body.repetition || '0',
-            images: finalImages
+            images: finalImages,
+            isSold: isSold
         };
 
-        await db.collection('annonces').updateOne({ _id: new ObjectId(id) }, { $set: updatedAnnonce });
+        if (isSold) {
+            fieldsToUpdate.datePublication = null;
+        } else {
+            fieldsToUpdate.datePublication = body.datePublication ? new Date(body.datePublication) : null;
+        }
+
+        await db.collection('annonces').updateOne({ _id: new ObjectId(id) }, { $set: fieldsToUpdate });
 
         res.status(200).send('Annonce mise à jour avec succès.');
 

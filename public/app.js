@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
         loadTodayAnnonces();
     }
 
+    if (path.endsWith('/sold.html')) {
+        loadSoldAnnonces();
+    }
+
     if (path.endsWith('/index.html') || path.endsWith('/')) {
         selectedFiles = [];
         setupTagSelectors();
@@ -371,8 +375,11 @@ async function populateEditForm() {
         document.getElementById('etat').value = annonce.etat;
         document.getElementById('prix').value = annonce.prix;
         document.getElementById('formatColis').value = annonce.formatColis;
-        document.getElementById('datePublication').value = annonce.datePublication;
+        if (annonce.datePublication) {
+            document.getElementById('datePublication').value = new Date(annonce.datePublication).toISOString().split('T')[0];
+        }
         document.getElementById('repetition').value = annonce.repetition || '0';
+        document.getElementById('isSold').checked = annonce.isSold || false;
 
         // Gérer les sélecteurs de tags (couleur, materiaux)
         const couleurs = Array.isArray(annonce.couleur) ? annonce.couleur : (annonce.couleur ? [annonce.couleur] : []);
@@ -436,6 +443,22 @@ function setupTagSelectors() {
 }
 
 /**
+ * Formate une date en JJ/MM/AAAA.
+ * @param {string} dateString La date à formater.
+ * @returns {string}
+ */
+function formatDate(dateString) {
+    if (!dateString) {
+        return 'Non définie';
+    }
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+/**
  * Charge et affiche toutes les annonces sur la page all.html
  */
 async function loadAllAnnonces() {
@@ -446,6 +469,13 @@ async function loadAllAnnonces() {
         const response = await fetch('/api/annonces');
         const annonces = await response.json();
 
+        // Trier les annonces côté client pour gérer les types de données mixtes
+        annonces.sort((a, b) => {
+            const dateA = a.datePublication ? new Date(a.datePublication) : new Date(0);
+            const dateB = b.datePublication ? new Date(b.datePublication) : new Date(0);
+            return dateB - dateA;
+        });
+
         if (annonces.length === 0) {
             container.innerHTML = '<p>Aucune annonce trouvée. Créez-en une !</p>';
             return;
@@ -453,11 +483,12 @@ async function loadAllAnnonces() {
 
         const annoncesHtml = annonces.map(annonce => `
             <a href="/edit.html?id=${annonce._id}" class="card-link">
-                <div class="card">
+                <div class="card ${annonce.isSold ? 'is-sold' : ''}">
+                    ${annonce.isSold ? '<div class="sold-badge">Vendu</div>' : ''}
                     <img src="/uploads/${annonce.images[0]}" alt="${annonce.titre}">
                     <div class="card-content">
                         <h3>${annonce.titre}</h3>
-                        <p>À poster le: ${annonce.datePublication}</p>
+                        <p>À poster le: ${formatDate(annonce.datePublication)}</p>
                     </div>
                 </div>
             </a>
@@ -470,6 +501,44 @@ async function loadAllAnnonces() {
         container.innerHTML = '<p>Impossible de charger les annonces.</p>';
     }
 }
+
+/**
+ * Charge et affiche toutes les annonces vendues sur la page sold.html
+ */
+async function loadSoldAnnonces() {
+    const container = document.getElementById('annonces-list');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/api/annonces/sold');
+        const annonces = await response.json();
+
+        if (annonces.length === 0) {
+            container.innerHTML = '<p>Aucune annonce vendue trouvée.</p>';
+            return;
+        }
+
+        const annoncesHtml = annonces.map(annonce => `
+            <a href="/edit.html?id=${annonce._id}" class="card-link">
+                <div class="card ${annonce.isSold ? 'is-sold' : ''}">
+                    ${annonce.isSold ? '<div class="sold-badge">Vendu</div>' : ''}
+                    <img src="/uploads/${annonce.images[0]}" alt="${annonce.titre}">
+                    <div class="card-content">
+                        <h3>${annonce.titre}</h3>
+                        <p>À poster le: ${formatDate(annonce.datePublication)}</p>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+
+        container.innerHTML = annoncesHtml;
+
+    } catch (error) {
+        console.error('Erreur lors du chargement des annonces vendues:', error);
+        container.innerHTML = '<p>Impossible de charger les annonces vendues.</p>';
+    }
+}
+
 
 /**
  * Charge et affiche les annonces du jour sur today.html
