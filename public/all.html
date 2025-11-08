@@ -17,9 +17,22 @@
 
     <main>
         <h1>Toutes mes annonces</h1>
-        <div id="annonces-list" class="grid-container">
-            <!-- Les annonces seront injectées ici par app.js -->
+
+        <div class="view-switcher">
+            <button id="grid-view-btn" class="active">Vue Grille</button>
+            <button id="calendar-view-btn">Vue Calendrier</button>
         </div>
+
+        <div id="grid-view" class="grid-container">
+            <!-- Les annonces en grille seront injectées ici -->
+        </div>
+
+        <div id="calendar-view" class="is-hidden">
+            <!-- La vue calendrier sera injectée ici -->
+        </div>
+
+        <!-- Modale pour assigner une annonce -->
+        <div id="assign-modal-container" class="modal-container"></div>
     </main>
 
     <script src="app.js"></script>

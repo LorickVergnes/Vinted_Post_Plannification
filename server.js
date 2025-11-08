@@ -101,20 +101,6 @@ app.post('/api/annonces', upload.array('photos', 10), async (req, res) => {
 });
 
 /**
- * GET /api/annonces
- * Retourne la liste de toutes les annonces sauvegardées.
- */
-app.get('/api/annonces', async (req, res) => {
-    try {
-        const annonces = await db.collection('annonces').find().sort({ createdAt: -1 }).toArray();
-        res.json(annonces);
-    } catch (error) {
-        console.error('Erreur lors de la lecture des annonces:', error);
-        res.status(500).send('Erreur interne du serveur.');
-    }
-});
-
-/**
  * GET /api/annonces/today
  * Retourne les annonces dont la date de publication est aujourd'hui.
  */
@@ -167,6 +153,20 @@ app.get('/api/annonces/sold', async (req, res) => {
         res.json(annonces);
     } catch (error) {
         console.error('Erreur lors de la lecture des annonces vendues:', error);
+        res.status(500).send('Erreur interne du serveur.');
+    }
+});
+
+/**
+ * GET /api/annonces
+ * Retourne la liste de toutes les annonces sauvegardées.
+ */
+app.get('/api/annonces', async (req, res) => {
+    try {
+        const annonces = await db.collection('annonces').find().sort({ createdAt: -1 }).toArray();
+        res.json(annonces);
+    } catch (error) {
+        console.error('Erreur lors de la lecture des annonces:', error);
         res.status(500).send('Erreur interne du serveur.');
     }
 });
@@ -258,6 +258,40 @@ app.post('/api/annonces/:id', upload.array('photos', 10), async (req, res) => {
         res.status(200).send('Annonce mise à jour avec succès.');
 
     } catch (error) {
+        res.status(500).send('Erreur interne du serveur.');
+    }
+});
+
+/**
+ * PATCH /api/annonces/:id
+ * Met à jour partiellement une annonce (pour le calendrier).
+ */
+app.patch('/api/annonces/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).send('ID d\'annonce invalide.');
+        }
+        const { body } = req;
+
+        const fieldsToUpdate = {};
+        if (body.datePublication) {
+            fieldsToUpdate.datePublication = new Date(body.datePublication);
+        }
+        if (body.repetition) {
+            fieldsToUpdate.repetition = body.repetition;
+        }
+
+        if (Object.keys(fieldsToUpdate).length === 0) {
+            return res.status(400).send('Aucun champ à mettre à jour.');
+        }
+
+        await db.collection('annonces').updateOne({ _id: new ObjectId(id) }, { $set: fieldsToUpdate });
+
+        res.status(200).json({ message: 'Annonce mise à jour avec succès.' });
+
+    } catch (error) {
+        console.error(`Erreur lors de la mise à jour partielle de l'annonce ${req.params.id}:`, error);
         res.status(500).send('Erreur interne du serveur.');
     }
 });

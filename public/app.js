@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Logique spécifique à la page ---
     const path = window.location.pathname;
 
-    if (path.endsWith('/all.html') || path.endsWith('/all.html')) {
+    if (path.endsWith('/all.html')) {
         loadAllAnnonces();
     }
 
@@ -452,55 +452,324 @@ function formatDate(dateString) {
         return 'Non définie';
     }
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
     return `${day}/${month}/${year}`;
 }
+
+/**
+ * Formate une date en YYYY-MM-DD (timezone-safe).
+ * @param {Date} date La date à formater.
+ * @returns {string}
+ */
+function toYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Formate une date en YYYY-MM-DD en utilisant UTC (timezone-safe for keys).
+ * @param {Date} date La date à formater.
+ * @returns {string}
+ */
+function toUTCYYYYMMDD(date) {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+let allAnnoncesData = [];
+let currentCalendarDate = new Date();
 
 /**
  * Charge et affiche toutes les annonces sur la page all.html
  */
 async function loadAllAnnonces() {
-    const container = document.getElementById('annonces-list');
-    if (!container) return;
+    const gridContainer = document.getElementById('grid-view');
+    const calendarContainer = document.getElementById('calendar-view');
+    if (!gridContainer || !calendarContainer) return;
+
+    setupViewSwitcher();
 
     try {
         const response = await fetch('/api/annonces');
-        const annonces = await response.json();
+        allAnnoncesData = await response.json();
 
-        // Trier les annonces côté client pour gérer les types de données mixtes
-        annonces.sort((a, b) => {
-            const dateA = a.datePublication ? new Date(a.datePublication) : new Date(0);
-            const dateB = b.datePublication ? new Date(b.datePublication) : new Date(0);
-            return dateB - dateA;
-        });
-
-        if (annonces.length === 0) {
-            container.innerHTML = '<p>Aucune annonce trouvée. Créez-en une !</p>';
-            return;
-        }
-
-        const annoncesHtml = annonces.map(annonce => `
-            <a href="/edit.html?id=${annonce._id}" class="card-link">
-                <div class="card ${annonce.isSold ? 'is-sold' : ''}">
-                    ${annonce.isSold ? '<div class="sold-badge">Vendu</div>' : ''}
-                    <img src="/uploads/${annonce.images[0]}" alt="${annonce.titre}">
-                    <div class="card-content">
-                        <h3>${annonce.titre}</h3>
-                        <p>À poster le: ${formatDate(annonce.datePublication)}</p>
-                    </div>
-                </div>
-            </a>
-        `).join('');
-
-        container.innerHTML = annoncesHtml;
+        renderGridView();
+        renderCalendarView();
 
     } catch (error) {
         console.error('Erreur lors du chargement des annonces:', error);
-        container.innerHTML = '<p>Impossible de charger les annonces.</p>';
+        gridContainer.innerHTML = '<p>Impossible de charger les annonces.</p>';
     }
 }
+
+function renderGridView() {
+    const container = document.getElementById('grid-view');
+    if (!container) return;
+
+    // Trier les annonces côté client pour gérer les types de données mixtes
+    allAnnoncesData.sort((a, b) => {
+        const dateA = a.datePublication ? new Date(a.datePublication) : new Date(0);
+        const dateB = b.datePublication ? new Date(b.datePublication) : new Date(0);
+        return dateB - dateA;
+    });
+
+    if (allAnnoncesData.length === 0) {
+        container.innerHTML = '<p>Aucune annonce trouvée. Créez-en une !</p>';
+        return;
+    }
+
+    const annoncesHtml = allAnnoncesData.map(annonce => `
+        <a href="/edit.html?id=${annonce._id}" class="card-link">
+            <div class="card ${annonce.isSold ? 'is-sold' : ''}">
+                ${annonce.isSold ? '<div class="sold-badge">Vendu</div>' : ''}
+                <img src="/uploads/${annonce.images[0]}" alt="${annonce.titre}">
+                <div class="card-content">
+                    <h3>${annonce.titre}</h3>
+                    <p>À poster le: ${formatDate(annonce.datePublication)}</p>
+                </div>
+            </div>
+        </a>
+    `).join('');
+
+    container.innerHTML = annoncesHtml;
+}
+
+function renderCalendarView() {
+    const container = document.getElementById('calendar-view');
+    if (!container) return;
+
+    container.innerHTML = ''; // Clear previous content
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+
+    // --- Header ---
+    const header = document.createElement('div');
+    header.className = 'calendar-header';
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '‹ Précédent';
+    prevBtn.onclick = () => {
+        currentCalendarDate.setMonth(month - 1);
+        renderCalendarView();
+    };
+    const monthTitle = document.createElement('h2');
+    monthTitle.textContent = `${currentCalendarDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}`;
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Suivant ›';
+    nextBtn.onclick = () => {
+        currentCalendarDate.setMonth(month + 1);
+        renderCalendarView();
+    };
+    header.appendChild(prevBtn);
+    header.appendChild(monthTitle);
+    header.appendChild(nextBtn);
+    container.appendChild(header);
+
+    // --- Grid ---
+    const grid = document.createElement('div');
+    grid.className = 'calendar-grid';
+
+    // Day headers
+    const daysOfWeek = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    daysOfWeek.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day-header';
+        dayHeader.textContent = day;
+        grid.appendChild(dayHeader);
+    });
+
+    // --- Pre-process announcements for the calendar view ---
+    const eventsByDate = {};
+    const calendarStart = new Date(year, month, 1);
+    const calendarEnd = new Date(year, month + 1, 0);
+
+    allAnnoncesData.forEach(annonce => {
+        if (!annonce.datePublication || annonce.isSold) return;
+
+        const startDate = new Date(annonce.datePublication);
+        const repetition = parseInt(annonce.repetition, 10);
+
+        let currentDate = new Date(startDate);
+        // Improved logic to avoid infinite loops and unnecessary iterations
+        if (repetition > 0) {
+            while (currentDate.getFullYear() < year) {
+                currentDate.setUTCDate(currentDate.getUTCDate() + repetition);
+            }
+            while (currentDate.getFullYear() === year && currentDate.getUTCMonth() < month) {
+                currentDate.setUTCDate(currentDate.getUTCDate() + repetition);
+            }
+        }
+
+        while (currentDate <= calendarEnd) {
+            if (currentDate >= calendarStart) {
+                 const dateKey = toUTCYYYYMMDD(currentDate);
+                 if (!eventsByDate[dateKey]) eventsByDate[dateKey] = [];
+                 eventsByDate[dateKey].push(annonce);
+            }
+            if (repetition > 0) {
+                currentDate.setUTCDate(currentDate.getUTCDate() + repetition);
+            } else {
+                break; // No repetition
+            }
+        }
+    });
+
+    // --- Day cells ---
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Previous month's days
+    for (let i = 0; i < firstDayOfMonth; i++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day is-other-month';
+        grid.appendChild(dayCell);
+    }
+
+    // Current month's days
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        const date = new Date(year, month, i);
+        
+        dayCell.addEventListener('click', (e) => {
+            if (e.target.closest('.calendar-annonce')) return; // Ignore clicks on events
+            openAssignModal(date);
+        });
+
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = i;
+        dayCell.appendChild(dayNumber);
+
+        const dateKey = toYYYYMMDD(date);
+        if (eventsByDate[dateKey]) {
+            eventsByDate[dateKey].forEach(annonce => {
+                const eventEl = document.createElement('a');
+                eventEl.href = `/edit.html?id=${annonce._id}`;
+                eventEl.className = 'calendar-annonce';
+                eventEl.innerHTML = `
+                    <img src="/uploads/${annonce.images[0]}" alt="${annonce.titre}">
+                    <span>${annonce.titre}</span>
+                `;
+                dayCell.appendChild(eventEl);
+            });
+        }
+        grid.appendChild(dayCell);
+    }
+
+    container.appendChild(grid);
+}
+
+function openAssignModal(date) {
+    const modalContainer = document.getElementById('assign-modal-container');
+    if (!modalContainer) return;
+
+    const nonSoldAnnonces = allAnnoncesData.filter(ad => !ad.isSold);
+
+    const listHtml = nonSoldAnnonces.map(ad => `
+        <div class="assign-annonce-item" data-id="${ad._id}">
+            <img src="/uploads/${ad.images[0]}" alt="${ad.titre}">
+            <span>${ad.titre}</span>
+        </div>
+    `).join('');
+
+    modalContainer.innerHTML = `
+        <div class="modal-backdrop" onclick="closeAssignModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeAssignModal()">&times;</button>
+            <h2>Assigner une annonce au ${date.toLocaleDateString('fr-FR')}</h2>
+            <div class="assign-list">
+                ${listHtml || '<p>Aucune annonce disponible à assigner.</p>'}
+            </div>
+        </div>
+    `;
+
+    // Add event listeners to the items
+    modalContainer.querySelectorAll('.assign-annonce-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const adId = item.dataset.id;
+            assignAnnonceToDate(adId, date);
+        });
+    });
+
+    document.body.classList.add('modal-open');
+}
+
+function closeAssignModal() {
+    const modalContainer = document.getElementById('assign-modal-container');
+    if (modalContainer) {
+        modalContainer.innerHTML = '';
+    }
+    document.body.classList.remove('modal-open');
+}
+
+async function assignAnnonceToDate(adId, date) {
+    const data = {
+        datePublication: toYYYYMMDD(date),
+        repetition: '14'
+    };
+
+    try {
+        const response = await fetch(`/api/annonces/${adId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erreur serveur: ${errorText}`);
+        }
+
+        // Update local data and re-render
+        const updatedAnnonce = allAnnoncesData.find(ad => ad._id === adId);
+        if (updatedAnnonce) {
+            updatedAnnonce.datePublication = data.datePublication;
+            updatedAnnonce.repetition = data.repetition;
+        }
+        
+        closeAssignModal();
+        renderCalendarView();
+        renderGridView(); // Also update grid view in the background
+
+    } catch (error) {
+        console.error('Erreur lors de l\'assignation de l\'annonce:', error);
+        alert('Impossible de mettre à jour l\'annonce.');
+    }
+}
+
+
+function setupViewSwitcher() {
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const calendarViewBtn = document.getElementById('calendar-view-btn');
+    const gridView = document.getElementById('grid-view');
+    const calendarView = document.getElementById('calendar-view');
+
+    if (!gridViewBtn || !calendarViewBtn || !gridView || !calendarView) return;
+
+    gridViewBtn.addEventListener('click', () => {
+        gridViewBtn.classList.add('active');
+        calendarViewBtn.classList.remove('active');
+        gridView.classList.remove('is-hidden');
+        calendarView.classList.add('is-hidden');
+    });
+
+    calendarViewBtn.addEventListener('click', () => {
+        calendarViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+        calendarView.classList.remove('is-hidden');
+        gridView.classList.add('is-hidden');
+    });
+}
+
 
 /**
  * Charge et affiche toutes les annonces vendues sur la page sold.html
