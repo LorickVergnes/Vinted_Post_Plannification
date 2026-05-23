@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annonces du Jour</title>
+    <title>Annonces du jour - Vinted Post</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav>
-        <a href="index.html">Créer une annonce</a>
-        <a href="all.html">Toutes les annonces</a>
-        <a href="today.html" class="active">Annonces du jour</a>
-        <a href="sold.html">Annonces vendues</a>
-    </nav>
+    <nav id="main-nav"></nav>
 
     <main>
-        <h1>Annonces à poster aujourd'hui</h1>
+        <div class="page-header">
+            <h1>À poster aujourd'hui</h1>
+        </div>
+
         <div id="today-list" class="grid-container">
             <!-- Les cartes récapitulatives seront injectées ici -->
         </div>
@@ -24,7 +22,9 @@
         <!-- Structure de la modale -->
         <div id="modal-container" class="modal-container">
             <div class="modal-backdrop"></div>
-            <div class="modal-content"></div>
+            <div class="modal-content">
+                <!-- Le contenu sera injecté par app.js -->
+            </div>
         </div>
     </main>
 

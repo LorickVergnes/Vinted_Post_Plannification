@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toutes les Annonces</title>
+    <title>Toutes mes annonces - Vinted Post</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav>
-        <a href="index.html">Créer une annonce</a>
-        <a href="all.html" class="active">Toutes les annonces</a>
-        <a href="today.html">Annonces du jour</a>
-        <a href="sold.html">Annonces vendues</a>
-    </nav>
+    <nav id="main-nav"></nav>
 
     <main>
-        <h1>Toutes mes annonces</h1>
-
-        <div class="view-switcher">
-            <button id="grid-view-btn" class="active">Vue Grille</button>
-            <button id="calendar-view-btn">Vue Calendrier</button>
+        <div class="page-header">
+            <h1>Mes annonces</h1>
+            <div class="view-switcher">
+                <button id="grid-view-btn" class="active"><i data-feather="grid"></i> Grille</button>
+                <button id="calendar-view-btn"><i data-feather="calendar"></i> Calendrier</button>
+            </div>
         </div>
 
         <div id="grid-view" class="grid-container">

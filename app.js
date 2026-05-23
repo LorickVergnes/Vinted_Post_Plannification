@@ -3,6 +3,48 @@ const supabaseUrl = 'https://sjeidyhfbkyiahdshxga.supabase.co';
 const supabaseKey = 'sb_publishable_JkZUUkVm-gP7qTM6fO7Spg_O72AdAmd';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+// --- Composant Navigation Dynamique ---
+function renderNavbar() {
+    const nav = document.getElementById('main-nav');
+    if (!nav) return;
+
+    const path = window.location.pathname;
+    const isPage = (name) => path.endsWith(name) || (name === 'index.html' && (path.endsWith('/') || path === ''));
+
+    nav.innerHTML = `
+        <div class="nav-container">
+            <a href="index.html" class="${isPage('index.html') ? 'active' : ''}">
+                <i data-feather="plus-circle"></i> Créer
+            </a>
+            <a href="all.html" class="${isPage('all.html') ? 'active' : ''}">
+                <i data-feather="list"></i> Annonces
+            </a>
+            <a href="today.html" class="${isPage('today.html') ? 'active' : ''}">
+                <i data-feather="calendar"></i> Aujourd'hui
+            </a>
+            <a href="sold.html" class="${isPage('sold.html') ? 'active' : ''}">
+                <i data-feather="check-square"></i> Vendues
+            </a>
+            <a href="#" id="logout-btn" style="margin-left: auto; color: #ef4444;">
+                <i data-feather="log-out"></i> Déconnexion
+            </a>
+        </div>
+    `;
+
+    // Ré-initialiser les icônes feather après l'injection
+    if (window.feather) feather.replace();
+
+    // Gérer la déconnexion
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await _supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+    }
+}
+
 // --- Protection des pages et Gestion de Session ---
 async function checkAuth() {
     const { data: { session } } = await _supabase.auth.getSession();
@@ -14,26 +56,8 @@ async function checkAuth() {
         window.location.href = 'index.html';
     }
     
-    // Ajouter un bouton de déconnexion dans la nav si on est connecté
     if (session) {
-        addLogoutButton();
-    }
-}
-
-function addLogoutButton() {
-    const nav = document.querySelector('nav');
-    if (nav && !document.getElementById('logout-btn')) {
-        const logoutBtn = document.createElement('a');
-        logoutBtn.id = 'logout-btn';
-        logoutBtn.href = '#';
-        logoutBtn.textContent = 'Déconnexion';
-        logoutBtn.style.color = '#ff4444';
-        logoutBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            await _supabase.auth.signOut();
-            window.location.href = 'login.html';
-        });
-        nav.appendChild(logoutBtn);
+        renderNavbar();
     }
 }
 
@@ -290,7 +314,7 @@ function setupPhotoPreviews() {
             if (typeof fileOrString === 'string') img.src = fileOrString;
             else { const reader = new FileReader(); reader.onload = (e) => { img.src = e.target.result; }; reader.readAsDataURL(fileOrString); }
         });
-        feather.replace();
+        if (window.feather) feather.replace();
     }
 }
 
@@ -383,7 +407,7 @@ function handleFormSubmission() {
             if (imageLinks.length === 0) {
                 alert('Veuillez sélectionner au moins une photo.');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Enregistrer l\'annonce';
+                submitBtn.textContent = isEditMode ? 'Mettre à jour' : 'Créer le brouillon';
                 return;
             }
 
@@ -417,7 +441,7 @@ function handleFormSubmission() {
             console.error(error);
             alert(`Erreur: ${error.message}`);
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Enregistrer l\'annonce';
+            submitBtn.textContent = 'Créer le brouillon';
         }
     });
 }
@@ -511,11 +535,23 @@ function renderGridView() {
         <a href="edit.html?id=${a.id}" class="card-link">
             <div class="card ${a.is_sold ? 'is-sold' : ''}">
                 ${a.is_sold ? '<div class="sold-badge">Vendu</div>' : ''}
-                <img src="${a.images[0]}" alt="${a.titre}">
-                <div class="card-content"><h3>${a.titre}</h3><p>À poster le: ${formatDate(a.date_publication)}</p></div>
+                <div class="card-image-wrapper">
+                    <img src="${a.images[0]}" alt="${a.titre}" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <div class="card-price">${a.prix.toFixed(2)} €</div>
+                    <div class="card-title">${a.titre}</div>
+                    <div class="card-info">
+                        <span class="card-brand">${a.marque || 'Sans marque'}</span>
+                        <span class="card-date">
+                            <i data-feather="calendar"></i> ${formatDate(a.date_publication)}
+                        </span>
+                    </div>
+                </div>
             </div>
         </a>
     `).join('');
+    if (window.feather) feather.replace();
 }
 
 function renderCalendarView() {
@@ -615,7 +651,25 @@ async function loadSoldAnnonces() {
     const { data, error } = await _supabase.from('annonces').select('*').eq('is_sold', true).order('created_at', { ascending: false });
     if (error) { console.error(error); return; }
     if (data.length === 0) { c.innerHTML = '<p>Aucune annonce vendue.</p>'; return; }
-    c.innerHTML = data.map(a => `<a href="edit.html?id=${a.id}" class="card-link"><div class="card is-sold"><div class="sold-badge">Vendu</div><img src="${a.images[0]}"><div class="card-content"><h3>${a.titre}</h3><p>À poster le: ${formatDate(a.date_publication)}</p></div></div></a>`).join('');
+    
+    c.innerHTML = data.map(a => `
+        <a href="edit.html?id=${a.id}" class="card-link">
+            <div class="card is-sold">
+                <div class="sold-badge">Vendu</div>
+                <div class="card-image-wrapper">
+                    <img src="${a.images[0]}" alt="${a.titre}" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <div class="card-price">${a.prix.toFixed(2)} €</div>
+                    <div class="card-title">${a.titre}</div>
+                    <div class="card-info">
+                        <span class="card-brand">${a.marque || 'Sans marque'}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    `).join('');
+    if (window.feather) feather.replace();
 }
 
 let todayAnnoncesData = {};
@@ -633,34 +687,85 @@ async function loadTodayAnnonces() {
         if (!r || r <= 0) return today.getTime() === d.getTime();
         return Math.floor(Math.abs(today - d) / 86400000) % r === 0;
     });
-    if (ads.length === 0) { c.innerHTML = '<p>Rien aujourd\'hui.</p>'; return; }
+    
+    if (ads.length === 0) { c.innerHTML = '<p>Rien à poster aujourd\'hui.</p>'; return; }
+    
     todayAnnoncesData = {};
     c.innerHTML = ads.map(a => {
         todayAnnoncesData[a.id] = a;
-        return `<div class="card summary-card" data-id="${a.id}"><img src="${a.images[0]}"><div class="card-content"><h3>${a.titre}</h3><p>Prix: ${a.prix} €</p></div></div>`;
+        return `
+            <div class="card summary-card" data-id="${a.id}" style="cursor: pointer;">
+                <div class="card-image-wrapper">
+                    <img src="${a.images[0]}" alt="${a.titre}">
+                </div>
+                <div class="card-content">
+                    <div class="card-price">${a.prix.toFixed(2)} €</div>
+                    <div class="card-title">${a.titre}</div>
+                    <div class="card-info">
+                        <span>${a.marque || 'Sans marque'}</span>
+                        <span style="color: var(--primary); font-weight: 700;">Détails <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i></span>
+                    </div>
+                </div>
+            </div>
+        `;
     }).join('');
+    if (window.feather) feather.replace();
 }
 
 function openTodayModal(id) {
     const a = todayAnnoncesData[id]; if (!a) return;
     const m = document.getElementById('modal-container');
     const content = m.querySelector('.modal-content');
+    
+    const couleurs = Array.isArray(a.couleur) ? a.couleur.join(', ') : '';
+    const materiaux = Array.isArray(a.materiaux) ? a.materiaux.join(', ') : '';
+    
     content.innerHTML = `
         <button class="modal-close-btn">&times;</button>
-        <div class="annonce-a-poster">
-            <div><strong>Images :</strong> <button type="button" class="download-all-btn" data-images='${JSON.stringify(a.images)}'>Tout télécharger</button><div class="image-gallery">${a.images.map(img => `<a href="${img}" target="_blank"><img src="${img}"></a>`).join('')}</div></div>
-            <h2>Annonce : <span class="copyable-text">${a.titre}</span><button class="copy-btn">Copier</button></h2>
-            <div><strong>Description :</strong> <button class="copy-btn">Copier</button><pre class="copyable-text">${a.description}</pre></div>
-            <ul class="info-list">
-                <li>Catégorie: <span class="copyable-text">${a.categorie}</span><button class="copy-btn">Copier</button></li>
-                <li>Marque: <span class="copyable-text">${a.marque}</span><button class="copy-btn">Copier</button></li>
-                <li>Taille: <span class="copyable-text">${a.taille}</span><button class="copy-btn">Copier</button></li>
-                <li>État: <span class="copyable-text">${a.etat}</span><button class="copy-btn">Copier</button></li>
-                <li>Prix: <span class="copyable-text">${a.prix} €</span><button class="copy-btn">Copier</button></li>
-                <li>Colis: <span class="copyable-text">${a.format_colis}</span><button class="copy-btn">Copier</button></li>
-            </ul>
+        <div class="annonce-details-premium">
+            <div class="details-grid">
+                <div class="details-gallery">
+                    <div class="gallery-main">
+                        <img src="${a.images[0]}" id="main-detail-img">
+                    </div>
+                    <div class="gallery-thumbs">
+                        ${a.images.map(img => `<img src="${img}" onclick="document.getElementById('main-detail-img').src='${img}'">`).join('')}
+                    </div>
+                    <button type="button" class="btn-submit download-all-btn" data-images='${JSON.stringify(a.images)}' style="margin-top: 20px;">
+                        <i data-feather="download"></i> Tout télécharger
+                    </button>
+                </div>
+                
+                <div class="details-info">
+                    <div class="card-price" style="font-size: 2rem; margin-bottom: 5px;">${a.prix.toFixed(2)} €</div>
+                    <h2 style="margin-top: 0; display: flex; align-items: center; justify-content: space-between;">
+                        <span class="copyable-text">${a.titre}</span>
+                        <button class="copy-btn"><i data-feather="copy"></i></button>
+                    </h2>
+                    
+                    <div class="info-section">
+                        <label>Description</label>
+                        <div style="position: relative;">
+                            <pre class="copyable-text">${a.description}</pre>
+                            <button class="copy-btn" style="position: absolute; top: 10px; right: 10px;"><i data-feather="copy"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <label>Fiche technique</label>
+                        <ul class="premium-info-list">
+                            <li><span>Catégorie</span> <strong><span class="copyable-text">${a.categorie}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                            <li><span>Marque</span> <strong><span class="copyable-text">${a.marque}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                            <li><span>Taille</span> <strong><span class="copyable-text">${a.taille}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                            <li><span>État</span> <strong><span class="copyable-text">${a.etat}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                            <li><span>Colis</span> <strong><span class="copyable-text">${a.format_colis}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
+    if (window.feather) feather.replace();
     document.body.classList.add('modal-open');
 }
 function closeModal() { document.body.classList.remove('modal-open'); }
