@@ -4,16 +4,97 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="487e8ec0-a2e3-4dda-a507-144f1f3c0253" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/all.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/all.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/edit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/sold.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/sold.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/today.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/today.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" />
+    <list default="true" id="487e8ec0-a2e3-4dda-a507-144f1f3c0253" name="Changes" comment="feat : passage sous supabase et mise en ligne github">
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905229785-837425280-IMG_20250517_170636.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905229808-642082328-IMG_20250517_170649.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905229816-681426389-IMG_20250517_170656.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905229831-761209462-IMG_20250517_170701.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905229847-828983274-IMG_20250517_170712.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905229859-1484405-IMG_20250517_170816.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713191-633886869-IMG_20240808_163431.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713195-599255828-IMG_20240808_163426.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713198-581876837-IMG_20240808_163535.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713207-331174534-IMG_20240808_163446.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713222-228251574-IMG_20240808_163453.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713224-289147275-IMG_20240808_163459.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713228-147329847-IMG_20240808_163507.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760905713231-573750375-IMG_20240808_163522.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906448535-825049224-IMG_20250517_170439.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906448558-758794257-IMG_20250517_170151.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906448578-86767200-IMG_20250517_170226.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906448590-362290565-IMG_20250517_170305.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906448601-600429276-IMG_20250517_170324.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906448615-96757634-IMG_20250517_170336.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906580420-239236323-IMG_20241006_152726.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906580422-253633904-IMG_20241006_152646.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906580427-488892913-IMG_20241006_152655.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906580432-432495156-IMG_20241006_152710.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906580438-855773304-IMG_20241006_152718.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698241-631658563-IMG_20250627_181032.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698245-773387044-IMG_20250627_181049.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698249-511538732-IMG_20250627_181101.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698252-552374576-IMG_20250627_181119.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698255-951273320-IMG_20250627_181134.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698258-222619805-IMG_20250627_181151.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698261-390205939-IMG_20250627_181203.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906698264-858413875-IMG_20250627_181914.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825529-311897632-IMG_20240808_163237.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825530-940598058-IMG_20240808_163041.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825532-855831193-IMG_20240808_163046.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825534-854259842-IMG_20240808_163055.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825537-466867740-IMG_20240808_163113.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825539-530318757-IMG_20240808_163128.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825540-242736555-IMG_20240808_163137.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906825541-150394275-IMG_20240808_163159.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906919632-407360964-IMG_20240722_141508.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906919633-829509926-IMG_20240722_141515.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906919635-646051538-IMG_20240722_141530.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906919637-915071917-IMG_20240722_141541.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760906919639-56781919-IMG_20240722_141603.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013436-150072-IMG_20240808_162827.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013437-121433862-IMG_20240808_162834.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013439-754174813-IMG_20240808_162847.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013442-489814238-IMG_20240808_162859.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013444-337898960-IMG_20240808_162905.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013445-763787616-IMG_20240808_162921.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013446-533585324-IMG_20240808_162930.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907013447-434011953-IMG_20240808_163020.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907117030-786443494-IMG_20250517_163737.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907117044-89598857-IMG_20250517_163744.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907117053-779691231-IMG_20250517_163754.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907117065-614170229-IMG_20250517_163804.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907117082-620900246-IMG_20250517_163819.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201125-599890423-IMG_20241208_095620.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201126-640913086-IMG_20241208_095722.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201128-759015083-IMG_20241208_095815.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201132-198729435-IMG_20241208_095824.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201135-962708000-IMG_20241208_095832.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201140-721429167-IMG_20241208_095842.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907201144-536112163-IMG_20241208_095914.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336741-9705806-IMG_20250627_180357.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336743-214718311-IMG_20250627_180406.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336744-63707965-IMG_20250627_180417.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336748-943173509-IMG_20250627_180426.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336751-707575599-IMG_20250627_180536.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336753-260919693-IMG_20250627_180714.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336755-211491317-IMG_20250627_180804.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336757-287790565-IMG_20250627_180807.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907336759-414852510-IMG_20250627_180811.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518426-870693921-IMG_20241208_095959.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518427-323751676-IMG_20241208_100011.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518429-710045245-IMG_20241208_100020.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518433-392357582-IMG_20241208_100029.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518439-221750306-IMG_20241208_100149.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518440-699254267-IMG_20241208_100158.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/uploads/1760907518442-172845203-IMG_20241208_100244.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/all.html" beforeDir="false" afterPath="$PROJECT_DIR$/all.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/edit.html" beforeDir="false" afterPath="$PROJECT_DIR$/edit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/sold.html" beforeDir="false" afterPath="$PROJECT_DIR$/sold.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/today.html" beforeDir="false" afterPath="$PROJECT_DIR$/today.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,8 +172,17 @@
       <workItem from="1762326530103" duration="834000" />
       <workItem from="1762333237132" duration="30000" />
       <workItem from="1762447862305" duration="5941000" />
-      <workItem from="1779521342152" duration="2084000" />
+      <workItem from="1779521342152" duration="2903000" />
     </task>
+    <task id="LOCAL-00001" summary="feat : passage sous supabase et mise en ligne github">
+      <option name="closed" value="true" />
+      <created>1779548569017</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779548569017</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -102,6 +192,8 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
+    <MESSAGE value="feat : passage sous supabase et mise en ligne github" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : passage sous supabase et mise en ligne github" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
