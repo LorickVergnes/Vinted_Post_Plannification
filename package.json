@@ -2,10 +2,6 @@
   "name": "vinted-draft-app",
   "version": "1.0.0",
   "description": "Application pour gérer des brouillons d'annonces Vinted.",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
   "keywords": [
     "vinted",
     "express",
