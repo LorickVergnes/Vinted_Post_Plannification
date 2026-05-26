@@ -113,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Gère les autres clics
-        if (event.target.classList.contains('copy-btn')) {
+        const copyBtn = event.target.closest('.copy-btn');
+        if (copyBtn) {
             handleCopyClick(event);
         }
         if (event.target.classList.contains('download-all-btn')) {
@@ -758,6 +759,8 @@ function openTodayModal(id) {
                             <li><span>Marque</span> <strong><span class="copyable-text">${a.marque}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
                             <li><span>Taille</span> <strong><span class="copyable-text">${a.taille}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
                             <li><span>État</span> <strong><span class="copyable-text">${a.etat}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                            <li><span>Couleurs</span> <strong><span class="copyable-text">${couleurs}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
+                            <li><span>Matériaux</span> <strong><span class="copyable-text">${materiaux}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
                             <li><span>Colis</span> <strong><span class="copyable-text">${a.format_colis}</span> <button class="copy-btn small"><i data-feather="copy"></i></button></strong></li>
                         </ul>
                     </div>
@@ -770,12 +773,27 @@ function openTodayModal(id) {
 }
 function closeModal() { document.body.classList.remove('modal-open'); }
 function handleCopyClick(e) {
-    const b = e.target.closest('.copy-btn'); if (!b) return;
-    const txt = b.parentElement.querySelector('.copyable-text');
-    if (txt) navigator.clipboard.writeText(txt.innerText).then(() => {
-        const fb = document.createElement('span'); fb.className='copy-feedback'; fb.textContent='Copié !';
-        b.after(fb); setTimeout(() => fb.remove(), 2000);
-    });
+    const b = e.target.closest('.copy-btn'); 
+    if (!b) return;
+    
+    const container = b.closest('div, h2, li, strong');
+    const txtElement = container ? container.querySelector('.copyable-text') : null;
+
+    if (txtElement) {
+        const textToCopy = txtElement.innerText || txtElement.textContent;
+        navigator.clipboard.writeText(textToCopy.trim()).then(() => {
+            const fb = document.createElement('span'); 
+            fb.className = 'copy-feedback'; 
+            fb.textContent = 'Copié !';
+            
+            b.appendChild(fb); 
+            
+            setTimeout(() => fb.remove(), 2000);
+        }).catch(err => {
+            console.error('Erreur de copie:', err);
+            alert('Erreur lors de la copie. Veuillez réessayer.');
+        });
+    }
 }
 
 function setupDeleteButton() {

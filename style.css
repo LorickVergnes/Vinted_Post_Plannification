@@ -625,6 +625,7 @@ body.modal-open { overflow: hidden; }
 
 /* --- Interactive Elements --- */
 .copy-btn {
+    position: relative;
     background: #f1f5f9;
     border: none;
     width: 32px;
