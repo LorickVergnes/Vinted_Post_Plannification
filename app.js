@@ -13,21 +13,26 @@ function renderNavbar() {
 
     nav.innerHTML = `
         <div class="nav-container">
-            <a href="index.html" class="${isPage('index.html') ? 'active' : ''}">
-                <i data-feather="plus-circle"></i> Créer
+            <a href="index.html" class="nav-logo">
+                <img src="assets/img/logo.png" alt="Luna Planning">
             </a>
-            <a href="all.html" class="${isPage('all.html') ? 'active' : ''}">
-                <i data-feather="list"></i> Annonces
-            </a>
-            <a href="today.html" class="${isPage('today.html') ? 'active' : ''}">
-                <i data-feather="calendar"></i> Aujourd'hui
-            </a>
-            <a href="sold.html" class="${isPage('sold.html') ? 'active' : ''}">
-                <i data-feather="check-square"></i> Vendues
-            </a>
-            <a href="#" id="logout-btn" style="margin-left: auto; color: #ef4444;">
-                <i data-feather="log-out"></i> Déconnexion
-            </a>
+            <div class="nav-links">
+                <a href="index.html" class="${isPage('index.html') ? 'active' : ''}">
+                    <i data-feather="plus-circle"></i> Créer
+                </a>
+                <a href="all.html" class="${isPage('all.html') ? 'active' : ''}">
+                    <i data-feather="list"></i> Annonces
+                </a>
+                <a href="today.html" class="${isPage('today.html') ? 'active' : ''}">
+                    <i data-feather="calendar"></i> Aujourd'hui
+                </a>
+                <a href="sold.html" class="${isPage('sold.html') ? 'active' : ''}">
+                    <i data-feather="check-square"></i> Vendues
+                </a>
+                <a href="#" id="logout-btn" style="margin-left: auto; color: #ef4444;">
+                    <i data-feather="log-out"></i> Déconnexion
+                </a>
+            </div>
         </div>
     `;
 
@@ -259,11 +264,20 @@ function setupPhotoPreviews() {
     let draggedIndex = null;
 
     function handleFiles(files) {
-        Array.from(files).forEach(file => {
-            if (!selectedFiles.find(f => (f.name || f) === file.name) && selectedFiles.length < 10) {
+        const fileList = Array.from(files);
+        const remainingSlots = 10 - selectedFiles.length;
+        
+        if (fileList.length > remainingSlots) {
+            alert(`Vous ne pouvez ajouter que ${remainingSlots} photo(s) supplémentaire(s) (Maximum 10 au total).`);
+        }
+
+        fileList.slice(0, remainingSlots).forEach(file => {
+            // Éviter les doublons par nom de fichier
+            if (!selectedFiles.find(f => (f.name || f) === file.name)) {
                 selectedFiles.push(file);
             }
         });
+        
         renderPreviews();
     }
 
@@ -726,15 +740,17 @@ function openTodayModal(id) {
         <div class="annonce-details-premium">
             <div class="details-grid">
                 <div class="details-gallery">
-                    <div class="gallery-main">
-                        <img src="${a.images[0]}" id="main-detail-img">
+                    <label>Photos (Glissez-les vers Vinted)</label>
+                    <div class="gallery-thumbs" id="modal-gallery">
+                        ${a.images.map((img, idx) => `<img src="${img}" draggable="true" data-index="${idx}" title="Glissez cette image">`).join('')}
                     </div>
-                    <div class="gallery-thumbs">
-                        ${a.images.map(img => `<img src="${img}" onclick="document.getElementById('main-detail-img').src='${img}'">`).join('')}
-                    </div>
-                    <button type="button" class="btn-submit download-all-btn" data-images='${JSON.stringify(a.images)}' style="margin-top: 20px;">
+                    <button type="button" class="btn-submit download-all-btn" data-images='${JSON.stringify(a.images)}' style="margin-top: 10px;">
                         <i data-feather="download"></i> Tout télécharger
                     </button>
+                    <div class="drag-tip">
+                        <i data-feather="info"></i>
+                        <span><strong>Astuce :</strong> Cliquez sur "Tout télécharger", puis glissez les fichiers depuis la barre de téléchargement de votre navigateur vers Vinted pour tout envoyer d'un coup !</span>
+                    </div>
                 </div>
                 
                 <div class="details-info">
@@ -768,6 +784,15 @@ function openTodayModal(id) {
             </div>
         </div>
     `;
+
+    // Ajouter les événements de drag pour marquer les photos déjà glissées
+    const galleryImgs = content.querySelectorAll('.gallery-thumbs img');
+    galleryImgs.forEach(img => {
+        img.addEventListener('dragend', () => {
+            img.classList.add('dragged');
+        });
+    });
+
     if (window.feather) feather.replace();
     document.body.classList.add('modal-open');
 }

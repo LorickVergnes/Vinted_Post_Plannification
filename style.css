@@ -57,14 +57,33 @@ nav {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
+    padding: 8px 20px;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    text-decoration: none;
+}
+
+.nav-logo img {
+    height: 40px;
+    width: auto;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
 }
 
 nav a {
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 600;
-    padding: 10px 20px;
+    padding: 10px 16px;
     border-radius: var(--radius-md);
     transition: var(--transition);
     font-size: 0.9rem;
@@ -524,15 +543,20 @@ body.modal-open { overflow: hidden; }
     display: flex;
     flex-direction: column;
     gap: 15px;
+    max-width: 350px; /* Limite la largeur de la colonne galerie */
 }
 
 .gallery-main {
     width: 100%;
     aspect-ratio: 4/5;
+    max-height: 450px; /* Limite la hauteur maximale de l'image */
     border-radius: var(--radius-md);
     overflow: hidden;
     background: #f8fafc;
     border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .gallery-main img {
@@ -542,25 +566,48 @@ body.modal-open { overflow: hidden; }
 }
 
 .gallery-thumbs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 10px;
-    overflow-x: auto;
     padding-bottom: 5px;
 }
 
 .gallery-thumbs img {
-    width: 70px;
-    height: 70px;
+    width: 100%;
+    aspect-ratio: 1;
     object-fit: cover;
     border-radius: var(--radius-sm);
-    cursor: pointer;
+    cursor: grab;
     border: 2px solid transparent;
     transition: var(--transition);
 }
 
 .gallery-thumbs img:hover {
     border-color: var(--pacific-cyan);
+    transform: scale(1.05);
 }
+
+.gallery-thumbs img:active {
+    cursor: grabbing;
+}
+
+.gallery-thumbs img.dragged {
+    opacity: 0.4;
+    filter: grayscale(1);
+}
+
+.drag-tip {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: #f0f9fa;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 
 .details-info {
     display: flex;
